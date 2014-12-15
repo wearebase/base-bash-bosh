@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# SYNC WORDPRESS UPLOADS FOLDER BETWEEN SERVER ENVIRONMENTS
+
+set -e
+
+CWD=$(dirname $0)
+
+ORIGIN_ENV_NAME="$1"
+if [ -z "$ORIGIN_ENV_NAME" ]
+then
+	echo "*** Aborting. No origin environment set"
+	exit 1
+fi
+ORIGIN_ENV_FILE="config/environments/$ORIGIN_ENV_NAME.env"
+if [ -a "$ORIGIN_ENV_NAME" ]
+then
+	echo "*** Aborting. Origin environment file does not exist"
+	exit 1
+fi
+DESTINATION_ENV_NAME="$2"
+if [ -z "$DESTINATION_ENV_NAME" ]
+then
+	echo "*** Aborting. No destination environment not found"
+	exit 1
+fi
+DESTINATION_ENV_FILE="config/environments/$DESTINATION_ENV_NAME.env"
+if [ -a "$ORIGIN_ENV_NAME" ]
+then
+	echo "*** Aborting. Destination environment file does not exist"
+	exit 1
+fi
+if [ "$ORIGIN_ENV_NAME" = "$DESTINATION_ENV_NAME" ]
+then
+    echo "*** Aborting. TO and FROM must be different"
+    exit 1
+fi
+
+if [ "$DESTINATION_ENV_NAME" = "production" ]
+then
+	echo "*** Aborting. You tried to rsync to" $DESTINATION_ENV_NAME", are you like a crazy person?!"
+	exit 1
+fi
+
+source "$CWD/../../$ORIGIN_ENV_FILE"
+ORIGIN_REMOTE_SSH="$USERNAME@$HOSTNAME"
+ORIGIN_SSH_OPTIONS="$SSH_OPTIONS"
+ORIGIN_WP_UPLOADS_LOCATION="$WP_UPLOADS_LOCATION"
+
+source "$CWD/../../$DESTINATION_ENV_FILE"
+DESTINATION_REMOTE_SSH="$USERNAME@$HOSTNAME"
+DESTINATION_SSH_OPTIONS="$SSH_OPTIONS"
+DESTINATION_WP_UPLOADS_LOCATION="$WP_UPLOADS_LOCATION"
+
+source "$CWD/../../Boshfile"
+
+echo "*** Copying uploads from $ORIGIN_ENV_NAME to $DESTINATION_ENV_NAME"
+
+START=$(date +%s)
+
+if [ "$ORIGIN_ENV_NAME" = "local" ] || [ "$DESTINATION_ENV_NAME" = "local" ]
+then
+    if [ "$ORIGIN_ENV_NAME" = "local" ]
+    then
+       rsync -avzh -e "ssh $DESTINATION_SSH_OPTIONS"  web/app/uploads/ $DESTINATION_REMOTE_SSH:/$DESTINATION_WP_UPLOADS_LOCATION
+    fi
+    if [ "$DESTINATION_ENV_NAME" = "local" ]
+    then
+       rsync -avzh -e "ssh $ORIGIN_SSH_OPTIONS" $ORIGIN_REMOTE_SSH:$ORIGIN_WP_UPLOADS_LOCATION/ web/app/uploads
+    fi
+else
+
+    if [ $ORIGIN_ENV_NAME = "vm" ]
+    then
+        echo "*** Aborting. Cannot copy from a virtual machine to a remote, remote is not aware of the VM"
+        exit 1
+    fi
+
+    # ssh into the TO server, and PULL from the FROM server.
+    # if you see "Host key verification failed" then the FROM needs to be added to the known hosts of the TO
+
+    echo "*** Connecting to both servers, this may take some time, be patient"
+    ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "rsync -avzh $ORIGIN_REMOTE_SSH:$ORIGIN_WP_UPLOADS_LOCATION/ $DESTINATION_WP_UPLOADS_LOCATION/"
+
+
+fi
+
+END=$(date +%s)
+
+DIFF=$(echo "$END - $START" | bc)
+
+echo "*** Completed in $DIFF Seconds"

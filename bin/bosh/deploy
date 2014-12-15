@@ -1,0 +1,123 @@
+#!/bin/bash
+
+set -e
+CWD=$(dirname $0)
+
+ENV_NAME="$1"
+if [ -z "$ENV_NAME" ]
+then
+	echo "*** Aborting. No environment set"
+	exit 1
+fi
+
+ENV_FILE="/config/environments/$ENV_NAME.env"
+if [ -a "$ENV_FILE" ]
+then
+	echo "*** Aborting. Environment file does not exist $ENV_FILE"
+	exit 1
+fi
+
+source "$CWD/../../$ENV_FILE"
+source "$CWD/../../Boshfile"
+
+GITISH=$2
+
+if [ -z "$GITISH" ]
+then
+	echo "Aborting. No gitish set"
+	exit 1
+fi
+
+GIT_HASH="$(git rev-parse --quiet --verify $GITISH)"
+
+if [ -z "$GIT_HASH" ]
+then
+	echo "Aborting. Cannot find $GITISH"
+	exit 1
+fi
+
+START=$(date +%s)
+
+REMOTE_SSH=$USERNAME@$HOSTNAME
+# SSH into the server, and check project directory exists. (will need to be made manually and given r+w permissions
+echo "*** Testing connection to $REMOTE_SSH"
+ssh $SSH_OPTIONS $REMOTE_SSH "cd $REMOTE_ROOT/$PROJECT_DIR"
+echo "*** Connected successfully"
+
+echo "Deploy $RELEASE_THIS to $ENV_while read LINE; doNAME ($REMOTE_SSH/$REMOTE_ROOT/$PROJECT_DIR) started at $(date)"
+echo
+echo "*** Preparing build"
+
+# checkout
+echo
+echo " - Checking out $GITISH ($GIT_HASH) locally to $BUILD_LOCATION"
+rm -rf $BUILD_LOCATION
+mkdir -p $BUILD_LOCATION
+git --work-tree=$BUILD_LOCATION checkout $GITISH -- .
+
+# build
+echo " - Running local build tool ('$BUILD_SCRIPT')"
+echo
+echo "-----------------------------------------------------------------------------"
+(cd $BUILD_LOCATION; $CWD/$BUILD_SCRIPT)
+echo "-----------------------------------------------------------------------------"
+echo
+
+# copy
+rm -f dist.tar.gz
+echo "*** Deploying to $REMOTE_SSH:$REMOTE_ROOT/$PROJECT_DIR/$RELEASE_THIS"
+echo " - Preparing target"
+ssh $SSH_OPTIONS $REMOTE_SSH "cd $REMOTE_ROOT/$PROJECT_DIR && rm -rf $RELEASE_THIS"
+
+echo " - Copying $(du -sh $BUILD_LOCATION | awk '{print $1}') of files (this may take some time)"
+
+# remove excluded files and directories from build
+for i in "${EXCLUDE_FROM_BUILD[@]}"; do
+    rm -rf $BUILD_LOCATION/$i
+done
+
+tar -zcf dist.tar.gz $BUILD_LOCATION
+scp -r $SCP_OPTIONS dist.tar.gz $REMOTE_SSH:$REMOTE_ROOT/$PROJECT_DIR
+ssh $SSH_OPTIONS $REMOTE_SSH "cd $REMOTE_ROOT/$PROJECT_DIR && tar -zxf dist.tar.gz . && rm -f dist.tar.gz && mv $BUILD_LOCATION $RELEASE_THIS "
+
+# switch symlink in 1 atomic operation
+echo
+echo "*** Publishing"
+echo " - Linking shared paths, running pre-publish script, switching symlink and running post-publish script"
+
+UPDATE_SHARED_PATHS_CMD="true"
+for i in "${SHARED_PATHS[@]}"; do
+    # remove symlinks and recreate symlinks
+	UPDATE_SHARED_PATHS_CMD="$UPDATE_SHARED_PATHS_CMD && \
+	rm -rf $REMOTE_ROOT/$PROJECT_DIR/$RELEASE_THIS/$i && \
+	ln -s $REMOTE_ROOT/$PROJECT_DIR/$SHARED_DIR/$i $REMOTE_ROOT/$PROJECT_DIR/$RELEASE_THIS/$i"
+done
+
+TIMESTAMP=$(date +%Y"-"%m"-"%d" "%H"-"%M"-"%S)
+
+DEPLOY_CMD="cd $REMOTE_ROOT/$PROJECT_DIR && \
+	$UPDATE_SHARED_PATHS_CMD && \
+	(cd $RELEASE_THIS && $PRE_PUBLISH) && \
+	ln -s $RELEASE_THIS current_tmp && mv -Tf current_tmp $RELEASE_CURRENT && \
+	(cd $REMOTE_ROOT/$PROJECT_DIR/$RELEASE_CURRENT && $POST_PUBLISH) && \
+	echo '$RELEASE_THIS $GIT_HASH $GITISH $TIMESTAMP' >> $REMOTE_ROOT/$PROJECT_DIR/$LOG_FILE"
+
+#echo "Deploy command:"
+#echo $DEPLOY_CMD
+
+echo
+echo "-----------------------------------------------------------------------------"
+
+
+ssh $SSH_OPTIONS $REMOTE_SSH $DEPLOY_CMD
+
+echo "-----------------------------------------------------------------------------"
+
+rm -rf $BUILD_LOCATION/
+rm $BUILD_LOCATION.tar.gz
+
+END=$(date +%s)
+
+DIFF=$(echo "$END - $START" | bc)
+
+echo "*** Completed in $DIFF Seconds"
