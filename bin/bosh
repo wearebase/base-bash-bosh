@@ -3,7 +3,9 @@
 set -e
 CWD="$(dirname "$(readlink -f "$0")")"
 
-if [  "$OPTIONS" = "--help" ] || [  "$OPTIONS" = "-h" ]
+ACTION=$1
+
+if [  "$ACTION" = "--help" ] || [  "$ACTION" = "-h" ]
 then
    cat << EOF
 usage: $0 options
