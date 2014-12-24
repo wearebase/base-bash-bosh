@@ -7,14 +7,14 @@
             "type": "package",
             "package": {
                 "name": "wearebase/bosh",
+                "bin": ["bin/bosh"],
                 "version": "dev-master",
                 "source": {
                     "url": "https://bitbucket.org/wearebase/base-bash-bosh.git",
                     "type": "git",
                     "reference": "origin/master"
                 }
-            },
-            "bin": ["bin/bosh", "bin/bosh"]
+            }
         }
     ]
 }

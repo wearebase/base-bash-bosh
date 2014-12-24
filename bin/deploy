@@ -1,9 +1,9 @@
 #!/bin/bash
 
 set -e
-CWD=$(dirname $0)
+CWD="$(dirname "$(readlink -f "$0")")"
 ROOT_DIR="$CWD/../../../../"
-source "$ROOT_DIR/config/bosh.config"
+source "$ROOT_DIR/config/bosh-config"
 
 ENV_NAME="$1"
 
@@ -14,11 +14,11 @@ then
 fi
 
 ENV_FILE="config/environments/$ENV_NAME.env"
-#if [ !  -a "$ENV_FILE" ]
-#then
-#	echo "*** Aborting. Environment file does not exist $ENV_FILE"
-#	exit 1
-#fi
+if [ ! -e "$ENV_FILE" ]
+then
+	echo "*** Aborting. Environment file does not exist $ENV_FILE"
+	exit 1
+fi
 
 source "$ENV_FILE"
 

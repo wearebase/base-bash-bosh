@@ -3,7 +3,7 @@
 # SYNC DATABASE BETWEEN SERVER ENVIRONMENTS
 
 set -e
-CWD=$(dirname $0)
+CWD="$(dirname "$(readlink -f "$0")")"
 ROOT_DIR="$CWD/../../../../"
 
 
@@ -33,7 +33,7 @@ then
 	exit 1
 fi
 ORIGIN_ENV_FILE="config/environments/$ORIGIN_ENV_NAME.env"
-if [ -a "$ORIGIN_ENV_NAME" ]
+if [ ! -e "$ORIGIN_ENV_NAME" ]
 then
 	echo "*** Aborting. Origin environment file does not exist"
 	exit 1
@@ -45,7 +45,7 @@ then
 	exit 1
 fi
 DESTINATION_ENV_FILE="config/environments/$DESTINATION_ENV_NAME.env"
-if [ -a "$ORIGIN_ENV_NAME" ]
+if [ ! -e "$ORIGIN_ENV_NAME" ]
 then
 	echo "*** Aborting. Destination environment file does not exist"
 	exit 1
@@ -82,7 +82,7 @@ DESTINATION_SCP_OPTIONS="$SCP_OPTIONS"
 DESTINATION_MYSQL_DB_NAME="$MYSQL_DB_NAME"
 DESTINATION_MYSQL_USER="$MYSQL_USER"
 
-source "$ROOT_DIR/config/bosh.config"
+source "$ROOT_DIR/config/bosh-config"
 
 if [ -z "$POST_IMPORT_DB_COMMAND" ]
 then
