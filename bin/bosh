@@ -21,6 +21,8 @@ EOF
 exit 1
 fi
 
+shift 1
+
 if [ ! -e "$CWD/installed" ]
 then
 
