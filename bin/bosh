@@ -1,0 +1,53 @@
+#!/bin/bash
+
+set -e
+CWD=$(dirname $0)
+
+if [  "$OPTIONS" = "--help" ] || [  "$OPTIONS" = "-h" ]
+then
+   cat << EOF
+usage: $0 options
+
+Something here
+
+COMMANDS:
+    install     Installs the bosh script
+    deploy <environment-name> <git-hash-or-tag> 	builds and deploys code to the server
+	sync-db
+	sync-uploads
+EOF
+exit 1
+fi
+
+ACTION="$1"
+shift 1
+
+if [ "$ACTION" == "install" ]
+then
+	source "$CWD/install"
+	exit 1
+fi
+
+if [ "$ACTION" == "deploy" ]
+then
+	source "$CWD/deploy"
+	exit 1
+fi
+
+if [ "$ACTION" == "build" ]
+then
+	source "$CWD/build"
+	exit 1
+fi
+
+if [ "$ACTION" == "sync-db" ]
+then
+	source "$CWD/sync-db"
+	exit 1
+fi
+
+if [ "$ACTION" == "sync-uploads" ]
+then
+	source "$CWD/sync-uploads"
+	exit 1
+fi

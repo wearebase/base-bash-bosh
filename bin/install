@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+CWD=$(dirname $0)
+ROOT_DIR="$CWD/../../../../"
+
+cp $CWD/../config $ROOT_DIR
+
+echo "Configuration files have been installed in your project root. Please update all files in /config with your environment and deployment settings"
+
+mv -- "$0" # delete thy self

@@ -2,23 +2,25 @@
 
 set -e
 CWD=$(dirname $0)
+ROOT_DIR="$CWD/../../../../"
+source "$ROOT_DIR/config/bosh.config"
 
 ENV_NAME="$1"
+
 if [ -z "$ENV_NAME" ]
 then
 	echo "*** Aborting. No environment set"
 	exit 1
 fi
 
-ENV_FILE="/config/environments/$ENV_NAME.env"
-if [ -a "$ENV_FILE" ]
-then
-	echo "*** Aborting. Environment file does not exist $ENV_FILE"
-	exit 1
-fi
+ENV_FILE="config/environments/$ENV_NAME.env"
+#if [ !  -a "$ENV_FILE" ]
+#then
+#	echo "*** Aborting. Environment file does not exist $ENV_FILE"
+#	exit 1
+#fi
 
-source "$CWD/../../$ENV_FILE"
-source "$CWD/../../Boshfile"
+source "$ENV_FILE"
 
 GITISH=$2
 

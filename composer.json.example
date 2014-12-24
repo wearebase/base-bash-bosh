@@ -1,0 +1,20 @@
+{
+    "require": {
+        "wearebase/bosh" : "dev-master"
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "wearebase/bosh",
+                "version": "dev-master",
+                "source": {
+                    "url": "https://bitbucket.org/wearebase/base-bash-bosh.git",
+                    "type": "git",
+                    "reference": "origin/master"
+                }
+            },
+            "bin": ["bin/bosh", "bin/bosh"]
+        }
+    ]
+}

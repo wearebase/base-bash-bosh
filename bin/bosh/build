@@ -1,4 +1,0 @@
-#!/bin/bash
-set -e
-composer -q install
-compass compile web/ -q -e production
