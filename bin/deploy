@@ -61,7 +61,7 @@ git --work-tree=$BUILD_LOCATION checkout $GITISH -- .
 echo " - Running local build tool ('$BUILD_SCRIPT')"
 echo
 echo "-----------------------------------------------------------------------------"
-(cd $BUILD_LOCATION; $CWD/$BUILD_SCRIPT)
+(cd $BUILD_LOCATION; $ROOT_DIR/$BUILD_SCRIPT)
 echo "-----------------------------------------------------------------------------"
 echo
 
