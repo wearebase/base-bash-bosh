@@ -5,7 +5,7 @@ CWD="$(dirname "$(readlink -f "$0")")"
 
 ACTION=$1
 
-if [  "$ACTION" = "--help" ] || [  "$ACTION" = "-h" ]
+if [  "$ACTION" = "--help" ] || [  "$ACTION" = "-h" ] || [ -z "$ACTION" ]
 then
    cat << EOF
 usage: $0 options
@@ -23,6 +23,7 @@ fi
 
 if [ ! -e "$CWD/installed" ]
 then
+
 	if [ "$ACTION" == "install" ]
 	then
 		source "$CWD/install"
@@ -50,3 +51,6 @@ then
 	source "$CWD/sync-uploads"
 	exit 1
 fi
+
+echo "Could not find script named $ACTION"
+exit 1
