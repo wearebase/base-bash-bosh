@@ -1,0 +1,13 @@
+{
+    "name": "wearebase/base-user",
+    "description": "Base User Components",
+    "keywords": ["entity", "user"],
+    "license": "Proprietary",
+    "authors": [
+        {
+            "name": "Chris Sherry",
+            "email": "chris.sherry@wearebase.com"
+        }
+   ],
+   "bin": ["bin/bosh"]
+}

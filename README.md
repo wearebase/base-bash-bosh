@@ -12,17 +12,8 @@ Add the following to your `composer.json` file and run `composer install`
         },
         "repositories": [
             {
-                "type": "package",
-                "package": {
-                    "name": "wearebase/bosh",
-                    "bin": ["bin/bosh"],
-                    "version": "dev-master",
-                    "source": {
-                        "url": "https://bitbucket.org/wearebase/base-bash-bosh.git",
-                        "type": "git",
-                        "reference": "origin/master"
-                    }
-                }
+                "type": "vcs",
+                "url": "git@bitbucket.org:wearebase/base-bash-bosh.git"
             }
         ]
     }
