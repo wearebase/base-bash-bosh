@@ -62,13 +62,16 @@ rm -rf $BUILD_LOCATION
 mkdir -p $BUILD_LOCATION
 git --work-tree=$BUILD_LOCATION checkout $GITISH -- .
 
-# build
-echo " - Running local build tool ('$BUILD_SCRIPT')"
-echo
-echo "-----------------------------------------------------------------------------"
-(cd $BUILD_LOCATION; $ROOT_DIR/$BUILD_SCRIPT)
-echo "-----------------------------------------------------------------------------"
-echo
+if [ ! -z "$BUILD_SCRIPT" ]
+then
+	# build
+	echo " - Running local build tool ('$BUILD_SCRIPT')"
+	echo
+	echo "-----------------------------------------------------------------------------"
+	(cd $BUILD_LOCATION; $ROOT_DIR/$BUILD_SCRIPT)
+	echo "-----------------------------------------------------------------------------"
+	echo
+fi
 
 # copy
 rm -f dist.tar.gz
