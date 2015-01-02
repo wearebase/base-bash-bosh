@@ -11,6 +11,7 @@ SHARED_DIR="shared" #inside $PROJECT_DIR
 RELEASE_CURRENT="current" #inside $PROJECT_DIR
 RELEASE_THIS="releases/$(date +"%s")" #inside PROJECT_DIR
 LOG_FILE="log.txt"
+BUILD_LOCATION="./dist"
 
 if [ -z "$ENV_NAME" ]
 then
