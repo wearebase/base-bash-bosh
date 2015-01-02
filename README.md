@@ -70,7 +70,7 @@ The script is called with two parameters. The first is the name of the environme
 
 Firstly, the code base will be cloned from git using your commits that you have made locally (instead of the remote git server). This clone will be placed in `./dist` temporarily
 
-This deploy script will call the build script (the location of which is defined in the `bosh-config` file) to prepare the site for deployment. This means that dependencies, pre-compiled files, minified scripts and anything else not source controlled will all have been placed in the `./dist` directory alongside your source controlled code.
+This deploy script will call the build script (the location of which is defined in the `bosh-config` file. This location is local to the root of your project) to prepare the site for deployment. This means that dependencies, pre-compiled files, minified scripts and anything else not source controlled will all have been placed in the `./dist` directory alongside your source controlled code. If you wish to call a build script which is outside the project root, you will need to create a script inside which then proxies to the external script.
 
 This code will then be zipped, moved to the remote server and unzipped and placed into the releases folder under the timestamp it was deployed at. Any shared directories as defined in `shared-paths.sh` (for files which are not source controlled such as user uploads) will be symbolically linked into the release folder, and a symbolic link which points to the current release will be updated so that `current` now points to your new release.
 

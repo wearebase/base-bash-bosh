@@ -7,6 +7,11 @@ source "$ROOT_DIR/config/bosh-config"
 
 ENV_NAME="$1"
 
+SHARED_DIR="shared" #inside $PROJECT_DIR
+RELEASE_CURRENT="current" #inside $PROJECT_DIR
+RELEASE_THIS="releases/$(date +"%s")" #inside PROJECT_DIR
+LOG_FILE="log.txt"
+
 if [ -z "$ENV_NAME" ]
 then
 	echo "*** Aborting. No environment set"
@@ -43,10 +48,10 @@ START=$(date +%s)
 REMOTE_SSH=$USERNAME@$HOSTNAME
 # SSH into the server, and check project directory exists. (will need to be made manually and given r+w permissions
 echo "*** Testing connection to $REMOTE_SSH"
-ssh $SSH_OPTIONS $REMOTE_SSH "cd $REMOTE_ROOT/$PROJECT_DIR"
+ssh $SSH_OPTIONS $REMOTE_SSH "cd $PROJECT_DIR"
 echo "*** Connected successfully"
 
-echo "Deploy $RELEASE_THIS to $ENV_while read LINE; doNAME ($REMOTE_SSH/$REMOTE_ROOT/$PROJECT_DIR) started at $(date)"
+echo "Deploy $RELEASE_THIS to $ENV_while read LINE; doNAME ($REMOTE_SSH/$PROJECT_DIR) started at $(date)"
 echo
 echo "*** Preparing build"
 
@@ -67,9 +72,9 @@ echo
 
 # copy
 rm -f dist.tar.gz
-echo "*** Deploying to $REMOTE_SSH:$REMOTE_ROOT/$PROJECT_DIR/$RELEASE_THIS"
+echo "*** Deploying to $REMOTE_SSH:$PROJECT_DIR/$RELEASE_THIS"
 echo " - Preparing target"
-ssh $SSH_OPTIONS $REMOTE_SSH "cd $REMOTE_ROOT/$PROJECT_DIR && rm -rf $RELEASE_THIS"
+ssh $SSH_OPTIONS $REMOTE_SSH "cd $PROJECT_DIR && rm -rf $RELEASE_THIS"
 
 echo " - Copying $(du -sh $BUILD_LOCATION | awk '{print $1}') of files (this may take some time)"
 
@@ -79,8 +84,8 @@ for i in "${EXCLUDE_FROM_BUILD[@]}"; do
 done
 
 tar -zcf dist.tar.gz $BUILD_LOCATION
-scp -r $SCP_OPTIONS dist.tar.gz $REMOTE_SSH:$REMOTE_ROOT/$PROJECT_DIR
-ssh $SSH_OPTIONS $REMOTE_SSH "cd $REMOTE_ROOT/$PROJECT_DIR && tar -zxf dist.tar.gz . && rm -f dist.tar.gz && mv $BUILD_LOCATION $RELEASE_THIS "
+scp -r $SCP_OPTIONS dist.tar.gz $REMOTE_SSH:$PROJECT_DIR
+ssh $SSH_OPTIONS $REMOTE_SSH "cd $PROJECT_DIR && tar -zxf dist.tar.gz . && rm -f dist.tar.gz && mv $BUILD_LOCATION $RELEASE_THIS "
 
 # switch symlink in 1 atomic operation
 echo
@@ -91,18 +96,18 @@ UPDATE_SHARED_PATHS_CMD="true"
 for i in "${SHARED_PATHS[@]}"; do
     # remove symlinks and recreate symlinks
 	UPDATE_SHARED_PATHS_CMD="$UPDATE_SHARED_PATHS_CMD && \
-	rm -rf $REMOTE_ROOT/$PROJECT_DIR/$RELEASE_THIS/$i && \
-	ln -s $REMOTE_ROOT/$PROJECT_DIR/$SHARED_DIR/$i $REMOTE_ROOT/$PROJECT_DIR/$RELEASE_THIS/$i"
+	rm -rf $PROJECT_DIR/$RELEASE_THIS/$i && \
+	ln -s $PROJECT_DIR/$SHARED_DIR/$i $PROJECT_DIR/$RELEASE_THIS/$i"
 done
 
 TIMESTAMP=$(date +%Y"-"%m"-"%d" "%H"-"%M"-"%S)
 
-DEPLOY_CMD="cd $REMOTE_ROOT/$PROJECT_DIR && \
+DEPLOY_CMD="cd $PROJECT_DIR && \
 	$UPDATE_SHARED_PATHS_CMD && \
 	(cd $RELEASE_THIS && $PRE_PUBLISH) && \
 	ln -s $RELEASE_THIS current_tmp && mv -Tf current_tmp $RELEASE_CURRENT && \
-	(cd $REMOTE_ROOT/$PROJECT_DIR/$RELEASE_CURRENT && $POST_PUBLISH) && \
-	echo '$RELEASE_THIS $GIT_HASH $GITISH $TIMESTAMP' >> $REMOTE_ROOT/$PROJECT_DIR/$LOG_FILE"
+	(cd $PROJECT_DIR/$RELEASE_CURRENT && $POST_PUBLISH) && \
+	echo '$RELEASE_THIS $GIT_HASH $GITISH $TIMESTAMP' >> $PROJECT_DIR/$LOG_FILE"
 
 #echo "Deploy command:"
 #echo $DEPLOY_CMD
