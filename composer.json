@@ -1,7 +1,7 @@
 {
-    "name": "wearebase/base-user",
-    "description": "Base User Components",
-    "keywords": ["entity", "user"],
+    "name": "wearebase/bosh",
+    "description": "B.O.S.H is a collection of orchestration & synchronisation scripts which can be used to deploy pre-built code and synchronise or backup databases and assets",
+    "keywords": ["orchestration", "deploy", "bash", "synchronisation"],
     "license": "Proprietary",
     "authors": [
         {
