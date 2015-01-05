@@ -8,7 +8,7 @@ Add the following to your `composer.json` file and run `composer install`
 
     {
         "require": {
-            "wearebase/bosh" : "dev-master"
+            "wearebase/bosh" : "1.0.*"
         },
         "repositories": [
             {
@@ -21,12 +21,12 @@ Add the following to your `composer.json` file and run `composer install`
 ## Setup
 
 Once installed (see `install` below), there will be a set a configuration files in the root of your project.
-`/config/bosh-config` contains the key settings for the scripts. `/config/environments/` contains `.env` files which are the *environments* the bosh scripts use as parameters. 
-For example the `production` environment uses settings from the `/config/environments/production.env` file.
+`config/bosh-config` contains the key settings for the scripts. `config/environments/` contains `.env` files which are the *environments* the bosh scripts use as parameters. 
+For example the `production` environment uses settings from the `config/environments/production.env` file.
 
 The environment name `local` does not need an environment file as this is your local environment. 
 
-An example `/config/environments` folder could contain
+An example `config/environments` folder could contain
 
     local.env
     vm.env
@@ -38,13 +38,13 @@ An example `/config/environments` folder could contain
 
 From the command line run the following:
 
-    ./vendor/bin/bosh <command> <parameters>
+    ./bin/bosh <command> <parameters>
     
 The following commands can be run:
 
 ### Install
 
-    ./vendor/bin/bosh install
+    ./bin/bosh install
      
 No other commands can be run until your have run the install command.
 This copies the example configuration and environment files to the root of your project.
@@ -53,9 +53,9 @@ This copies the example configuration and environment files to the root of your 
 
 Builds and deploys code to a server
 
-    ./vendor/bin/bosh deploy <environment-name> <git-branch-or-tag>
+    ./bin/bosh deploy <environment-name> <git-branch-or-tag>
     
-The script is called with two parameters. The first is the name of the environment you wish to deploy to. The configuration for which can be found in `/config/environments/<environment-name>.env`. The second is the git hash, or a tag or branch name you wish to deploy. Only committed code will be deployed.
+The script is called with two parameters. The first is the name of the environment you wish to deploy to. The configuration for which can be found in `config/environments/<environment-name>.env`. The second is the git hash, or a tag or branch name you wish to deploy. Only committed code will be deployed.
 
 #### What it does
 
@@ -72,7 +72,7 @@ Within the `bosh-config` file there are arrays for `PRE_PUBLISH` and `POST_PUBLI
 
 This script will backup, copy and import databases from one server to another
 
-    ./vendor/bin/bosh sync-db <origin-environment> <destination-environment>
+    ./bin/bosh sync-db <origin-environment> <destination-environment>
     
 The script is called with two parameters. The first is the environment name you with to copy FROM. The second is also an environment name - the one you wish to copy the database TO.
 
@@ -88,11 +88,11 @@ The export from the FROM server simply runs the `mysqldump` command and does an 
 
 Copies upload files from one server to another
 
-    ./vendor/bin/bosh sync-uploads <origin-environment> <destination-environment>
+    ./bin/bosh sync-uploads <origin-environment> <destination-environment>
     
 The script is called with two parameters. The first is the environment name you with to copy FROM. The second is also an environment name - the one you wish to copy the database TO.
 
-The location of the uploads folder may be different depending on your wordpress setup, so these locations must be defined in the corresponding environment file in `/config/environments/`
+The location of the uploads folder may be different depending on your wordpress setup, so these locations must be defined in the corresponding environment file in `config/environments/`
 
 You cannot sync to `production`. You can only sync TO or FROM `vm` with `local`
 
