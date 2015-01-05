@@ -58,19 +58,32 @@ echo "*** Preparing build"
 
 # checkout
 echo
-echo " - Checking out $GITISH ($GIT_HASH) locally to $BUILD_LOCATION"
+echo "    - Checking out $GITISH ($GIT_HASH) locally to $BUILD_LOCATION"
 rm -rf $BUILD_LOCATION
 mkdir -p $BUILD_LOCATION
 git --work-tree=$BUILD_LOCATION checkout $GITISH -- .
 
+if [ "$DOING_BOSH_DEVELOPMENT" = "true" ] && [ "$DESTINATION_ENV_NAME" != "production" ]
+then
+	echo -e "    - \e[30;43m WARN: [Doing Bosh Dev] Creating working repo patch \e[0m"
+	git --no-pager diff > ${BUILD_LOCATION}/git.workingPatchFromParent.patch
+	cp -R .git ${BUILD_LOCATION}/
+	echo -e "    - \e[30;43m WARN: [Doing Bosh Dev] Applying working repo patch to $BUILD_LOCATION \e[0m"
+	WHERE_ON_EARTH=`pwd`
+	cd ${BUILD_LOCATION};
+	git apply git.workingPatchFromParent.patch;
+	rm -rf .git/;
+	rm -rf git.workingPatchFromParent.patch;
+	cd ${WHERE_ON_EARTH};
+fi
+
 if [ ! -z "$BUILD_SCRIPT" ]
 then
 	# build
-	echo " - Running local build tool ('$BUILD_SCRIPT')"
-	echo
-	echo "-----------------------------------------------------------------------------"
-	(cd $BUILD_LOCATION; $ROOT_DIR/$BUILD_SCRIPT)
-	echo "-----------------------------------------------------------------------------"
+	echo "    - Running local build tool ('$BUILD_SCRIPT')"
+	echo "    --------------------------------------------------"
+	echo "    $(cd $BUILD_LOCATION; $BUILD_SCRIPT)"
+	echo "    --------------------------------------------------"
 	echo
 fi
 
