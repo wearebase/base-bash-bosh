@@ -8,8 +8,9 @@ source "$ROOT_DIR/config/bosh-config"
 ENV_NAME="$1"
 
 SHARED_DIR="shared" #inside $PROJECT_DIR
+RELEASES_DIR="releases"
 RELEASE_CURRENT="current" #inside $PROJECT_DIR
-RELEASE_THIS="releases/$(date +"%s")" #inside PROJECT_DIR
+RELEASE_THIS="$RELEASES_DIR/$(date +"%s")" #inside PROJECT_DIR
 LOG_FILE="log.txt"
 BUILD_LOCATION="./dist"
 
