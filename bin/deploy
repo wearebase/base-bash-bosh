@@ -49,16 +49,20 @@ START=$(date +%s)
 
 REMOTE_SSH=$USERNAME@$HOSTNAME
 # SSH into the server, and check project directory exists. (will need to be made manually and given r+w permissions
-echo "*** Testing connection to $REMOTE_SSH"
+echo "*** Pre-flight checks"
+echo "    - Testing connection to $REMOTE_SSH"
 ssh $SSH_OPTIONS $REMOTE_SSH "cd $PROJECT_DIR"
-echo "*** Connected successfully"
+echo "    - Creating shared and release directories"
+ssh $SSH_OPTIONS $REMOTE_SSH "mkdir -p $PROJECT_DIR/$SHARED_DIR; mkdir -p $PROJECT_DIR/$RELEASES_DIR"
+echo
 
-echo "Deploy $RELEASE_THIS to $ENV_while read LINE; doNAME ($REMOTE_SSH/$PROJECT_DIR) started at $(date)"
+echo "*** Deploy Started at $(date)"
+echo "    - Deploying: $RELEASE_THIS to $ENV_NAME"
+echo "    - Remote: $REMOTE_SSH:$PROJECT_DIR"
 echo
 echo "*** Preparing build"
 
 # checkout
-echo
 echo "    - Checking out $GITISH ($GIT_HASH) locally to $BUILD_LOCATION"
 rm -rf $BUILD_LOCATION
 mkdir -p $BUILD_LOCATION
@@ -91,10 +95,10 @@ fi
 # copy
 rm -f dist.tar.gz
 echo "*** Deploying to $REMOTE_SSH:$PROJECT_DIR/$RELEASE_THIS"
-echo " - Preparing target"
+echo "    - Preparing target"
 ssh $SSH_OPTIONS $REMOTE_SSH "cd $PROJECT_DIR && rm -rf $RELEASE_THIS"
 
-echo " - Copying $(du -sh $BUILD_LOCATION | awk '{print $1}') of files (this may take some time)"
+echo "    - Copying $(du -sh $BUILD_LOCATION | awk '{print $1}') of release files to the destination server"
 
 # remove excluded files and directories from build
 for i in "${EXCLUDE_FROM_BUILD[@]}"; do
@@ -108,7 +112,10 @@ ssh $SSH_OPTIONS $REMOTE_SSH "cd $PROJECT_DIR && tar -zxf dist.tar.gz . && rm -f
 # switch symlink in 1 atomic operation
 echo
 echo "*** Publishing"
-echo " - Linking shared paths, running pre-publish script, switching symlink and running post-publish script"
+echo "    - Linking shared paths"
+echo "    - Running pre-publish script"
+echo "    - Switching symlink"
+echo "    - Running post-publish script"
 
 UPDATE_SHARED_PATHS_CMD="true"
 for i in "${SHARED_PATHS[@]}"; do
@@ -127,16 +134,10 @@ DEPLOY_CMD="cd $PROJECT_DIR && \
 	(cd $PROJECT_DIR/$RELEASE_CURRENT && $POST_PUBLISH) && \
 	echo '$RELEASE_THIS $GIT_HASH $GITISH $TIMESTAMP' >> $PROJECT_DIR/$LOG_FILE"
 
-#echo "Deploy command:"
-#echo $DEPLOY_CMD
-
 echo
-echo "-----------------------------------------------------------------------------"
-
-
-ssh $SSH_OPTIONS $REMOTE_SSH $DEPLOY_CMD
-
-echo "-----------------------------------------------------------------------------"
+echo "    --------------------------------------------------"
+echo "    $(ssh $SSH_OPTIONS $REMOTE_SSH $DEPLOY_CMD)"
+echo "    --------------------------------------------------"
 
 rm -rf $BUILD_LOCATION/
 rm $BUILD_LOCATION.tar.gz
