@@ -24,7 +24,7 @@ Once installed (see `install` below), there will be a set a configuration files 
 `config/bosh-config` contains the key settings for the scripts. `config/environments/` contains `.env` files which are the *environments* the bosh scripts use as parameters. 
 For example the `production` environment uses settings from the `config/environments/production.env` file.
 
-The environment name `local` does not need an environment file as this is your local environment. 
+The environment `local` does not need a user/hostname/project-root (see `config/environments/local.env` for an example). 
 
 An example `config/environments` folder could contain
 
@@ -67,7 +67,6 @@ This code will then be zipped, moved to the remote server and unzipped and place
 
 Within the `bosh-config` file there are arrays for `PRE_PUBLISH` and `POST_PUBLISH` commands which are run before the symbolic link `current` is updated and after. This is where unit tests and other checking tools will be run. If any of part of the script fails to pass the script will bail out.
 
-
 ### Sync Database
 
 This script will backup, copy and import databases from one server to another
@@ -84,6 +83,8 @@ You cannot sync to `production`. You can only sync TO or FROM `vm` with `local`
 
 The export from the FROM server simply runs the `mysqldump` command and does an entire database dump. This file is then copied to the TO server you specified. The database will then be imported and apply the sql commands from the `POST_IMPORT_DB_COMMAND` item in the `bosh-config` file . These commands alter database values to turn the application into a development state from a production state, for example changing email addresses and sandboxing payment gateways.
 
+**Important note:** Cancelling the script does not stop any processes that are running on the remote. You will need to let these finish or kill them manually be logging into the remote server yourself.
+
 ### Sync Uploads (Wordpress Only)
 
 Copies upload files from one server to another
@@ -95,6 +96,8 @@ The script is called with two parameters. The first is the environment name you 
 The location of the uploads folder may be different depending on your wordpress setup, so these locations must be defined in the corresponding environment file in `config/environments/`
 
 You cannot sync to `production`. You can only sync TO or FROM `vm` with `local`
+
+**Important note:** Cancelling the script does not stop any processes that are running on the remote. You will need to let these finish or kill them manually be logging into the remote server yourself.
 
 
 
