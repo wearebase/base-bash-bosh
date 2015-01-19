@@ -120,11 +120,17 @@ else
 
     if [ "$ORIGIN_ENV_NAME" = "local" ]
     then
+
        # make dump directories if needed
        mkdir -p $LOCAL_DBDUMPS_DIR
        ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "mkdir -p $DESTINATION_REMOTE_ROOT/$DBDUMPS_DIR"
        # dump database
-       mysqldump -u $ORIGIN_MYSQL_USER --password="$ORIGIN_ENV_DB_PASS" $ORIGIN_MYSQL_DB_NAME > $LOCAL_DBDUMPS_DIR/$FILENAME
+
+       if [ ! -f  $LOCAL_DBDUMPS_DIR/$FILENAME ]
+       then
+            mysqldump -u $ORIGIN_MYSQL_USER --password="$ORIGIN_ENV_DB_PASS" $ORIGIN_MYSQL_DB_NAME > $LOCAL_DBDUMPS_DIR/$FILENAME
+       fi
+
        # copy file to server
        scp -Cr $DESTINATION_SCP_OPTIONS $LOCAL_DBDUMPS_DIR/$FILENAME $DESTINATION_REMOTE_SSH:$DESTINATION_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME
        # import
