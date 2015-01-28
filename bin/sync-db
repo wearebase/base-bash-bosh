@@ -111,7 +111,7 @@ then
     echo "*** Connecting to both servers, this may take some time, be patient"
     # ssh in, make directory if needed and dump database
 
-     ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME"
+     ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME \"$MYSQLDUMP_PARAMS\" "
 
     # ssh in, make directory if needed and scp database across from the other and then import
      ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "mkdir -p $DESTINATION_REMOTE_ROOT/$DBDUMPS_DIR && scp -Cr ORIGIN_SCP_OPTIONS $ORIGIN_REMOTE_SSH:$ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME $DBDUMPS_DIR/$FILENAME && [ ! \"$OPTIONS\" = \"--backup\" ] && [ ! \"$OPTIONS\" = \"-b\" ] && mysql -u $DESTINATION_MYSQL_USER --password=\"$DESTINATION_ENV_DB_PASS\" $DESTINATION_MYSQL_DB_NAME < $DBDUMPS_DIR/$FILENAME && echo \"$POST_IMPORT_DB_COMMAND\" | mysql -u $DESTINATION_MYSQL_USER --password=\"$DESTINATION_ENV_DB_PASS\" $DESTINATION_MYSQL_DB_NAME"
@@ -128,7 +128,7 @@ else
 
        if [ ! -f  $LOCAL_DBDUMPS_DIR/$FILENAME ]
        then
-            mysqldump -u $ORIGIN_MYSQL_USER --password="$ORIGIN_ENV_DB_PASS" $ORIGIN_MYSQL_DB_NAME > $LOCAL_DBDUMPS_DIR/$FILENAME
+            mysqldump -u $ORIGIN_MYSQL_USER --password="$ORIGIN_ENV_DB_PASS" $ORIGIN_MYSQL_DB_NAME > $LOCAL_DBDUMPS_DIR/$FILENAME "$MYSQLDUMP_PARAMS"
        fi
 
        # copy file to server
@@ -148,7 +148,7 @@ else
         mkdir -p $LOCAL_DBDUMPS_DIR
 
         # dump database
-        ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && [[ -f $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME ]] && echo \"mysqldump with this file name $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME already exists, skipping export\" || mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME"
+        ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && [[ -f $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME ]] && echo \"mysqldump with this file name $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME already exists, skipping export\" || mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" \"$MYSQLDUMP_PARAMS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME"
         # copy file to server
 
         if [ ! -f  $LOCAL_DBDUMPS_DIR/$FILENAME ]
