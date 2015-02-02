@@ -92,12 +92,12 @@ echo "*** Copying database from $ORIGIN_ENV_NAME to $DESTINATION_ENV_NAME"
 
 # Ask for passwords
 echo "Enter Password for $ORIGIN_ENV_NAME database";
-read ORIGIN_ENV_DB_PASS
+read -s -p "Origin Database Password: " ORIGIN_ENV_DB_PASS
 
 if [ ! "$OPTIONS" = "--backup" ] && [ ! "$OPTIONS" = "-b" ]
 then
     echo "Enter Password for $DESTINATION_ENV_NAME database";
-    read DESTINATION_ENV_DB_PASS
+    read -s -p "Destination Database Password: " DESTINATION_ENV_DB_PASS
 fi
 
 START=$(date +%s)
