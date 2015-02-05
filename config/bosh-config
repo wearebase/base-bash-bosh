@@ -28,7 +28,7 @@ POST_IMPORT_DB_COMMAND=(
 )
 
 ### ADDITIONAL MYSQLDUMP PARAMETERS TO e.g. --ignore-table=$MYSQL_DB_NAME.table_name ###
-MYSQLDUMP_PARAMS=""
+MYSQLDUMP_PARAMS="--debug-info"
 
 ########## DEFAULT DEPLOYMENT SETTINGS ##########
 
