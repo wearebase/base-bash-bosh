@@ -6,9 +6,9 @@ We built this as a tool to solve a problem, and it works great for us. However i
 
 ## Prerequisites:
  
-* You will need the following on your machine `sshpass`
+* You will need the following on your machine `sshpass` `git`
 
-        ubuntu: sudo apt-get install sshpass
+        ubuntu: sudo apt-get install sshpass git
 
 ## Installation
 
