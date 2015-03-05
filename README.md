@@ -29,8 +29,8 @@ The environment `local` does not need a user/hostname/project-root (see `config/
 An example `config/environments` folder could contain
 
     local.env
-    vm.env
-    dev.env
+    vagrant.env
+    development.env
     staging.env
     production.env
 
@@ -77,7 +77,8 @@ The script is called with two parameters. The first is the environment name you 
 
 There is an optional parameter `-b` or `--backup` which will skip the import step.
 
-You cannot sync to `production`. You can only sync TO or FROM `vm` with `local`
+~~You cannot sync to `production`. You can only sync TO or FROM `vagrant` with `local`~~
+Update: You can now! It uses your local machine as a proxy.
 
 #### What it does
 
@@ -95,7 +96,7 @@ The script is called with two parameters. The first is the environment name you 
 
 The location of the uploads folder may be different depending on your wordpress setup, so these locations must be defined in the corresponding environment file in `config/environments/`
 
-You cannot sync to `production`. You can only sync TO or FROM `vm` with `local`
+You cannot sync to `production`. You can only sync TO or FROM `vagrant` with `local`
 
 **Important note:** Cancelling the script does not stop any processes that are running on the remote. You will need to let these finish or kill them manually be logging into the remote server yourself.
 
