@@ -1,6 +1,14 @@
-# Base Orchestration & Synchronisation Helper
+# Base Orchestration & Synchronisation Helper [BETA]
 
-B.O.S.H is a collection of orchestration & synchronisation scripts which can be used to deploy pre-built code and synchronise or backup databases and assets
+B.O.S.H is a collection of orchestration & synchronisation scripts which can be used to deploy pre-built code and synchronise or backup databases and assets.
+
+We built this as a tool to solve a problem, and it works great for us. However it has only been used with a small number of projects and as a result there maybe still be some bugs. We do not recommend its use on a production environment until it has been tested against a similar, non-production environment. If you find a problem please raise an issue for us.
+
+## Prerequisites:
+ 
+* You will need the following on your machine `sshpass`
+
+        sudo apt-get install sshpass
 
 ## Installation
 
