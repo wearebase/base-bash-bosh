@@ -8,23 +8,14 @@ We built this as a tool to solve a problem, and it works great for us. However i
  
 * You will need the following on your machine `sshpass`
 
-        sudo apt-get install sshpass
+        ubuntu: sudo apt-get install sshpass
 
 ## Installation
 
-Add the following to your `composer.json` file and run `composer install`
+Run the following commands
 
-    {
-        "require": {
-            "wearebase/bosh" : "1.0.*"
-        },
-        "repositories": [
-            {
-                "type": "vcs",
-                "url": "git@bitbucket.org:wearebase/base-bash-bosh.git"
-            }
-        ]
-    }
+    composer require wearebase/bosh:~1.0.15
+    composer install
 
 ## Setup
 
