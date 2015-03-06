@@ -14,7 +14,7 @@ We built this as a tool to solve a problem, and it works great for us. However i
 
 Run the following commands
 
-    composer require wearebase/bosh:~1.0.15
+    composer require wearebase/bosh:~1.0.16
     composer install
 
 ## Setup
