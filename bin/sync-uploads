@@ -63,11 +63,11 @@ if [ "$ORIGIN_ENV_NAME" = "local" ] || [ "$DESTINATION_ENV_NAME" = "local" ]
 then
     if [ "$ORIGIN_ENV_NAME" = "local" ]
     then
-       rsync -avzh -e "ssh $DESTINATION_SSH_OPTIONS"  web/app/uploads/ $DESTINATION_REMOTE_SSH:/$DESTINATION_WP_UPLOADS_LOCATION
+       rsync -azh --info=progress2 -e "ssh $DESTINATION_SSH_OPTIONS"  web/app/uploads/ $DESTINATION_REMOTE_SSH:/$DESTINATION_WP_UPLOADS_LOCATION
     fi
     if [ "$DESTINATION_ENV_NAME" = "local" ]
     then
-       rsync -avzh -e "ssh $ORIGIN_SSH_OPTIONS" $ORIGIN_REMOTE_SSH:$ORIGIN_WP_UPLOADS_LOCATION/ web/app/uploads
+       rsync -azh --info=progress2 -e "ssh $ORIGIN_SSH_OPTIONS" $ORIGIN_REMOTE_SSH:$ORIGIN_WP_UPLOADS_LOCATION/ web/app/uploads
     fi
 else
 
