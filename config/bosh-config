@@ -30,6 +30,10 @@ POST_IMPORT_DB_COMMAND=(
 ### ADDITIONAL MYSQLDUMP PARAMETERS TO e.g. --ignore-table=$MYSQL_DB_NAME.table_name ###
 MYSQLDUMP_PARAMS="--debug-info"
 
+
+### ADDITIONAL RSYNC PARAMETERS FOR SYNC-UPLOADS SCRIPT. --archive --compress --rsh ARE ON BY DEFAULT. eg. --exclude 'my-excluded-folder'
+UPLOADS_RSYNC_PARAMS="--verbose --human-readable --bwlimit=5000"
+
 ########## DEFAULT DEPLOYMENT SETTINGS ##########
 
 ### NAME OF TEMPORARY FOLDER WHICH RELEASE IS BUILT WITHIN

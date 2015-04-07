@@ -63,11 +63,11 @@ if [ "$ORIGIN_ENV_NAME" = "local" ] || [ "$DESTINATION_ENV_NAME" = "local" ]
 then
     if [ "$ORIGIN_ENV_NAME" = "local" ]
     then
-       rsync -avzh -e "ssh $DESTINATION_SSH_OPTIONS"  web/app/uploads/ $DESTINATION_REMOTE_SSH:/$DESTINATION_WP_UPLOADS_LOCATION
+       rsync -a -z $UPLOADS_RSYNC_PARAMS -e "ssh $DESTINATION_SSH_OPTIONS"  web/app/uploads/ $DESTINATION_REMOTE_SSH:/$DESTINATION_WP_UPLOADS_LOCATION
     fi
     if [ "$DESTINATION_ENV_NAME" = "local" ]
     then
-       rsync -avzh -e "ssh $ORIGIN_SSH_OPTIONS" $ORIGIN_REMOTE_SSH:$ORIGIN_WP_UPLOADS_LOCATION/ web/app/uploads
+       rsync -a -z $UPLOADS_RSYNC_PARAMS -e "ssh $ORIGIN_SSH_OPTIONS" $ORIGIN_REMOTE_SSH:$ORIGIN_WP_UPLOADS_LOCATION/ web/app/uploads
     fi
 else
 
@@ -81,7 +81,7 @@ else
     # if you see "Host key verification failed" then the FROM needs to be added to the known hosts of the TO
 
     echo "*** Connecting to both servers, this may take some time, be patient"
-    ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "rsync -avzh $ORIGIN_REMOTE_SSH:$ORIGIN_WP_UPLOADS_LOCATION/ $DESTINATION_WP_UPLOADS_LOCATION/"
+    ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "rsync -a -h $UPLOADS_RSYNC_PARAMS $ORIGIN_REMOTE_SSH:$ORIGIN_WP_UPLOADS_LOCATION/ $DESTINATION_WP_UPLOADS_LOCATION/"
 
 
 fi
