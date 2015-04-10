@@ -115,7 +115,7 @@ then
     then
 
         echo "*** Connecting to $ORIGIN_ENV_NAME Server"
-        ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && [[ -f $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME ]] && echo \"    - Skipping export because a dump already exists for today\" || mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" \"$MYSQLDUMP_PARAMS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME"
+        ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && [[ -f $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME ]] && echo \"    - Skipping export because a dump already exists for today\" && exit ||  echo \"    - Exporting database to dump file on server\" && mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" \"$MYSQLDUMP_PARAMS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/tmp 2>&1 && mv $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/tmp $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME || { echo \"Could not export database, password may have been incorrect\"; exit 1; }"
         # copy file to server
 
         if [ -f  $LOCAL_DBDUMPS_DIR/$FILENAME ]
@@ -145,7 +145,7 @@ then
         echo "*** Connecting to $ORIGIN_ENV_NAME Server"
         # ssh in, make directory if needed and dump database
 
-         ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && echo \"    - Exporting database to dump file\" && mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME \"$MYSQLDUMP_PARAMS\" "
+         ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && echo \"    - Exporting database to dump file on server\" && mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" \"$MYSQLDUMP_PARAMS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/tmp 2>&1 && mv $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/tmp $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME || { echo \"Could not export database, password may have been incorrect\"; exit 1; }"
 
         echo "*** Connecting to $DESTINATION_ENV_NAME Server"
 
@@ -169,7 +169,7 @@ else
        fi
 
        echo "    - Exporting local database to dump file"
-       mysqldump -u $ORIGIN_MYSQL_USER --password="$ORIGIN_ENV_DB_PASS" $ORIGIN_MYSQL_DB_NAME > $LOCAL_DBDUMPS_DIR/$FILENAME "$MYSQLDUMP_PARAMS"
+       mysqldump -u $ORIGIN_MYSQL_USER --password="$ORIGIN_ENV_DB_PASS" "$MYSQLDUMP_PARAMS" $ORIGIN_MYSQL_DB_NAME > $LOCAL_DBDUMPS_DIR/tmp 2>&1 && mv $LOCAL_DBDUMPS_DIR/tmp $LOCAL_DBDUMPS_DIR/$FILENAME || { echo "Could not export database, password may have been incorrect"; exit 1; }
 
        # copy file to server
        echo "    - Copying local database dump file to $DESTINATION_ENV_NAME server"
@@ -188,7 +188,7 @@ else
     then
 
         echo "*** Connecting to $ORIGIN_ENV_NAME Server"
-        ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && [[ -f $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME ]] && echo \"    - Skipping export because a dump already exists for today\" || mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" \"$MYSQLDUMP_PARAMS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME"
+        ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && [[ -f $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME ]] && echo \"    - Skipping export because a dump already exists for today\" && exit || echo \"    - Exporting database to dump file on server\" && mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" \"$MYSQLDUMP_PARAMS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/tmp 2>&1 && mv $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/tmp $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME || { echo \"Could not export database, password may have been incorrect\"; exit 1; }"
         # copy file to server
 
         if [ -f  $LOCAL_DBDUMPS_DIR/$FILENAME ]
