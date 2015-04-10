@@ -2,6 +2,7 @@
 
 set -e
 CWD="$(dirname "$(readlink -f "$0")")"
+ROOT_DIR="$CWD/../../../../"
 
 ACTION=$1
 
@@ -23,7 +24,7 @@ fi
 
 shift 1
 
-if [ ! -e "$CWD/installed" ]
+if [ ! -e "$ROOT_DIR/config/bosh-config" ]
 then
 
 	if [ "$ACTION" == "install" ]
