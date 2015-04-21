@@ -30,7 +30,7 @@ then
 	if [ "$ACTION" == "install" ]
 	then
 		source "$CWD/install"
-		exit 1
+		exit 0
 	else
 		echo "please run bosh install"
 		exit 1
@@ -40,19 +40,19 @@ fi
 if [ "$ACTION" == "deploy" ]
 then
 	source "$CWD/deploy"
-	exit 1
+	exit 0
 fi
 
 if [ "$ACTION" == "sync-db" ]
 then
 	source "$CWD/sync-db"
-	exit 1
+	exit 0
 fi
 
 if [ "$ACTION" == "sync-uploads" ]
 then
 	source "$CWD/sync-uploads"
-	exit 1
+	exit 0
 fi
 
 echo "Could not find script named $ACTION"
