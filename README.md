@@ -76,7 +76,7 @@ The script is called with two parameters. The first is the environment name you 
 
 There is an optional parameter `-b` or `--backup` which will skip the import step.
 
-~~You cannot sync to `production`. You can only sync TO or FROM `vagrant` with `local`~~
+~~You cannot sync to `production`.
 Update: You can now! It uses your local machine as a proxy.
 
 #### What it does
