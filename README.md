@@ -12,15 +12,22 @@ We built this as a tool to solve a problem, and it works great for us. However i
 
 ## Installation
 
-Run the following commands
+Run the following commands (check for latest version)
 
-    composer require wearebase/bosh:~1.0.16
+    composer require wearebase/bosh:~1.0.23
     composer install
+
+## Install
+
+    ./bin/bosh install
+     
+No other commands can be run until your have run the install command.
+This copies the example configuration and environment files to the root of your project.
 
 ## Setup
 
-Once installed (see `install` below), there will be a set a configuration files in the root of your project.
-`config/bosh-config` contains the key settings for the scripts. `config/environments/` contains `.env` files which are the *environments* the bosh scripts use as parameters. 
+Once installed, there will be a set a configuration files in the root of your project.
+`config/bosh-config` contains the key settings for the scripts. `config/environments/` contains `.env` files which are the *environments* the bosh scripts use as parameters.
 For example the `production` environment uses settings from the `config/environments/production.env` file.
 
 The environment `local` does not need a user/hostname/project-root (see `config/environments/local.env` for an example). 
@@ -35,22 +42,13 @@ An example `config/environments` folder could contain
 
 ## Usage
 
-From the command line run the following:
+From the command line, various scripts can be run in a similar way to the install script mentioned above:
 
     ./bin/bosh <command> <parameters>
-    
-The following commands can be run:
-
-### Install
-
-    ./bin/bosh install
-     
-No other commands can be run until your have run the install command.
-This copies the example configuration and environment files to the root of your project.
 
 ### Deploy
 
-Builds and deploys code to a server
+Builds (if a build script has been defined) and deploys commited code to a server
 
     ./bin/bosh deploy <environment-name> <git-branch-or-tag>
     
@@ -65,6 +63,10 @@ This deploy script will call the build script (the location of which is defined 
 This code will then be zipped, moved to the remote server and unzipped and placed into the releases folder under the timestamp it was deployed at. Any shared directories as defined in `shared-paths.sh` (for files which are not source controlled such as user uploads) will be symbolically linked into the release folder, and a symbolic link which points to the current release will be updated so that `current` now points to your new release.
 
 Within the `bosh-config` file there are arrays for `PRE_PUBLISH` and `POST_PUBLISH` commands which are run before the symbolic link `current` is updated and after. This is where unit tests and other checking tools will be run. If any of part of the script fails to pass the script will bail out.
+
+##### Gotchas
+
+You must commit any code needed in the build. This includes the build script itself, eg. the Makefile.
 
 ### Sync Database
 
@@ -98,3 +100,4 @@ The location of the uploads folder may be different depending on your wordpress 
 You cannot sync to `production`. You can only sync TO or FROM `vagrant` with `local`
 
 **Important note:** Cancelling the script does not stop any processes that are running on the remote. You will need to let these finish or kill them manually be logging into the remote server yourself.
+
