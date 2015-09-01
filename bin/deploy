@@ -1,19 +1,8 @@
 #!/bin/bash
 
 set -e
-CWD="$(dirname "$(readlink -f "$0")")"
-ROOT_DIR="$CWD/../../../../"
-source "$ROOT_DIR/config/bosh-config"
 
 ENV_NAME="$1"
-
-PROJECT_DIR="project"
-SHARED_DIR="shared"
-RELEASES_DIR="releases"
-RELEASE_CURRENT="current"
-RELEASE_THIS="$RELEASES_DIR/$(date +"%s")"
-LOG_FILE="log.txt"
-BUILD_LOCATION="./dist"
 
 if [ -z "$ENV_NAME" ]
 then
@@ -29,6 +18,18 @@ then
 fi
 
 source "$ENV_FILE"
+
+CWD="$(dirname "$(readlink -f "$0")")"
+ROOT_DIR="$CWD/../../../../"
+source "$ROOT_DIR/config/bosh-config"
+
+PROJECT_DIR="project"
+SHARED_DIR="shared"
+RELEASES_DIR="releases"
+RELEASE_CURRENT="current"
+RELEASE_THIS="$RELEASES_DIR/$(date +"%s")"
+LOG_FILE="log.txt"
+BUILD_LOCATION="./dist"
 
 GITISH=$2
 
