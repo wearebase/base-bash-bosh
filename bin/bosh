@@ -9,15 +9,9 @@ ACTION=$1
 if [  "$ACTION" = "--help" ] || [  "$ACTION" = "-h" ] || [ -z "$ACTION" ]
 then
    cat << EOF
-usage: $0 options
+See README.md
 
-Something here
 
-COMMANDS:
-    install     Installs the bosh script
-    deploy <environment-name> <git-hash-or-tag> 	builds and deploys code to the server
-	sync-db
-	sync-uploads
 EOF
 exit 1
 fi
