@@ -3,8 +3,6 @@
 # SYNC DATABASE BETWEEN SERVER ENVIRONMENTS
 
 set -e
-CWD="$(dirname "$(readlink -f "$0")")"
-ROOT_DIR="$CWD/../../../../"
 
 
 if [  "$OPTIONS" = "--help" ] || [  "$OPTIONS" = "-h" ]
@@ -32,7 +30,7 @@ then
 	echo "*** Aborting. No origin environment set"
 	exit 1
 fi
-ORIGIN_ENV_FILE="config/environments/$ORIGIN_ENV_NAME.env"
+ORIGIN_ENV_FILE="$ROOT_DIR/config/environments/$ORIGIN_ENV_NAME.env"
 if [ "$ORIGIN_ENV_NAME" != "local" ] && [ ! -e "$ORIGIN_ENV_FILE" ]
 then
 	echo "*** Aborting. Origin environment file does not exist"
@@ -44,7 +42,7 @@ then
 	echo "*** Aborting. No destination environment not found"
 	exit 1
 fi
-DESTINATION_ENV_FILE="config/environments/$DESTINATION_ENV_NAME.env"
+DESTINATION_ENV_FILE="$ROOT_DIR/config/environments/$DESTINATION_ENV_NAME.env"
 if [ "$DESTINATION_ENV_NAME" != "local" ] && [ ! -e "$DESTINATION_ENV_FILE" ]
 then
 	echo "*** Aborting. Destination environment file does not exist"
@@ -67,7 +65,7 @@ mkdir -p $LOCAL_DBDUMPS_DIR
 
 OPTIONS="$3"
 
-source "$ROOT_DIR$ORIGIN_ENV_FILE"
+source "$ORIGIN_ENV_FILE"
 ORIGIN_REMOTE_SSH="$USERNAME@$HOSTNAME"
 ORIGIN_REMOTE_ROOT="$REMOTE_ROOT"
 ORIGIN_SSH_OPTIONS="$SSH_OPTIONS"
@@ -75,7 +73,7 @@ ORIGIN_MYSQL_USER="$MYSQL_USER"
 ORIGIN_SCP_OPTIONS="$SCP_OPTIONS"
 ORIGIN_MYSQL_DB_NAME="$MYSQL_DB_NAME"
 
-source "$ROOT_DIR$DESTINATION_ENV_FILE"
+source "$DESTINATION_ENV_FILE"
 DESTINATION_REMOTE_SSH="$USERNAME@$HOSTNAME"
 DESTINATION_REMOTE_ROOT="$REMOTE_ROOT"
 DESTINATION_MYSQL_USER="$MYSQL_USER"

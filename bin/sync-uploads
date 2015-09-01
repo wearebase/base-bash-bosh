@@ -3,9 +3,6 @@
 # SYNC WORDPRESS UPLOADS FOLDER BETWEEN SERVER ENVIRONMENTS
 
 set -e
-CWD="$(dirname "$(readlink -f "$0")")"
-ROOT_DIR="$CWD/../../../../"
-
 
 ORIGIN_ENV_NAME="$1"
 if [ -z "$ORIGIN_ENV_NAME" ] && [ "$ORIGIN_ENV_NAME" != "local" ]
@@ -13,7 +10,7 @@ then
 	echo "*** Aborting. No origin environment set"
 	exit 1
 fi
-ORIGIN_ENV_FILE="config/environments/$ORIGIN_ENV_NAME.env"
+ORIGIN_ENV_FILE="$ROOT_DIR/config/environments/$ORIGIN_ENV_NAME.env"
 if [ "$ORIGIN_ENV_NAME" != "local" ] && [ ! -e "$ORIGIN_ENV_FILE" ]
 then
 	echo "*** Aborting. Origin environment file does not exist"
@@ -25,7 +22,7 @@ then
 	echo "*** Aborting. No destination environment not found"
 	exit 1
 fi
-DESTINATION_ENV_FILE="config/environments/$DESTINATION_ENV_NAME.env"
+DESTINATION_ENV_FILE="$ROOT_DIR/config/environments/$DESTINATION_ENV_NAME.env"
 if [ "$DESTINATION_ENV_NAME" != "local" ] && [ ! -e "$DESTINATION_ENV_FILE" ]
 then
 	echo "*** Aborting. Destination environment file does not exist"
@@ -43,12 +40,12 @@ then
 	exit 1
 fi
 
-source "$ROOT_DIR$ORIGIN_ENV_FILE"
+source "$ORIGIN_ENV_FILE"
 ORIGIN_REMOTE_SSH="$USERNAME@$HOSTNAME"
 ORIGIN_SSH_OPTIONS="$SSH_OPTIONS"
 ORIGIN_WP_UPLOADS_LOCATION="$WP_UPLOADS_LOCATION"
 
-source "$ROOT_DIR$DESTINATION_ENV_FILE"
+source "$DESTINATION_ENV_FILE"
 DESTINATION_REMOTE_SSH="$USERNAME@$HOSTNAME"
 DESTINATION_SSH_OPTIONS="$SSH_OPTIONS"
 DESTINATION_WP_UPLOADS_LOCATION="$WP_UPLOADS_LOCATION"
@@ -63,11 +60,11 @@ if [ "$ORIGIN_ENV_NAME" = "local" ] || [ "$DESTINATION_ENV_NAME" = "local" ]
 then
     if [ "$ORIGIN_ENV_NAME" = "local" ]
     then
-       rsync -a -z $UPLOADS_RSYNC_PARAMS -e "ssh $DESTINATION_SSH_OPTIONS"  web/app/uploads/ $DESTINATION_REMOTE_SSH:/$DESTINATION_WP_UPLOADS_LOCATION
+       rsync -a -z $UPLOADS_RSYNC_PARAMS -e "ssh $DESTINATION_SSH_OPTIONS" $ROOT_DIR/web/app/uploads/ $DESTINATION_REMOTE_SSH:/$DESTINATION_WP_UPLOADS_LOCATION
     fi
     if [ "$DESTINATION_ENV_NAME" = "local" ]
     then
-       rsync -a -z $UPLOADS_RSYNC_PARAMS -e "ssh $ORIGIN_SSH_OPTIONS" $ORIGIN_REMOTE_SSH:$ORIGIN_WP_UPLOADS_LOCATION/ web/app/uploads
+       rsync -a -z $UPLOADS_RSYNC_PARAMS -e "ssh $ORIGIN_SSH_OPTIONS" $ORIGIN_REMOTE_SSH:$ORIGIN_WP_UPLOADS_LOCATION/ $ROOT_DIR/web/app/uploads
     fi
 else
 

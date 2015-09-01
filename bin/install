@@ -1,9 +1,5 @@
 #!/bin/bash
 
-set -e
-CWD="$(dirname "$(readlink -f "$0")")"
-ROOT_DIR="$CWD/../../../../"
-
-cp -nR $CWD/../config $ROOT_DIR
+cp -nR $BOSH_DIR/config $ROOT_DIR
 
 echo "Configuration files have been installed in your project root. Please update all files in /config with your environment and deployment settings"

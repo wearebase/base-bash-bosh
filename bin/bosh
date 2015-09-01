@@ -1,8 +1,11 @@
 #!/bin/bash
 
 set -e
-CWD="$(dirname "$(readlink -f "$0")")"
-ROOT_DIR="$CWD/../../../../"
+
+SOURCE_DIR="$(dirname "$BASH_SOURCE")"
+ROOT_DIR=$SOURCE_DIR/../../
+BOSH_DIR=$SOURCE_DIR/../wearebase/base-bash-bosh/
+BIN_DIR=$BOSH_DIR/bin/
 
 ACTION=$1
 
@@ -23,7 +26,7 @@ then
 
 	if [ "$ACTION" == "install" ]
 	then
-		source "$CWD/install"
+		source "$BIN_DIR/install"
 		exit 0
 	else
 		echo "please run bosh install"
@@ -33,25 +36,25 @@ fi
 
 if [ "$ACTION" == "install-remote" ]
 then
-	source "$CWD/install-remote"
+	source "$BIN_DIR/install-remote"
 	exit 0
 fi
 
 if [ "$ACTION" == "deploy" ]
 then
-	source "$CWD/deploy"
+	source "$BIN_DIR/deploy"
 	exit 0
 fi
 
 if [ "$ACTION" == "sync-db" ]
 then
-	source "$CWD/sync-db"
+	source "$BIN_DIR/sync-db"
 	exit 0
 fi
 
 if [ "$ACTION" == "sync-uploads" ]
 then
-	source "$CWD/sync-uploads"
+	source "$BIN_DIR/sync-uploads"
 	exit 0
 fi
 

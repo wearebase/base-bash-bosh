@@ -10,7 +10,7 @@ then
 	exit 1
 fi
 
-ENV_FILE="config/environments/$ENV_NAME.env"
+ENV_FILE="$ROOT_DIR/config/environments/$ENV_NAME.env"
 if [ ! -e "$ENV_FILE" ]
 then
 	echo "*** Aborting. Environment file does not exist $ENV_FILE"
