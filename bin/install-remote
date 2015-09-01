@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -e
+CWD="$(dirname "$(readlink -f "$0")")"
+ROOT_DIR="$CWD/../../../../"
+source "$ROOT_DIR/config/bosh-config"
+
+PROJECT_DIR="project"
+SHARED_DIR="shared"
+RELEASES_DIR="releases"
+RELEASE_CURRENT="current"
+
+ENV_NAME="$1"
+
+if [ -z "$ENV_NAME" ]
+then
+	echo "*** Aborting. No environment set"
+	exit 1
+fi
+
+ENV_FILE="config/environments/$ENV_NAME.env"
+if [ ! -e "$ENV_FILE" ]
+then
+	echo "*** Aborting. Environment file does not exist $ENV_FILE"
+	exit 1
+fi
+
+source "$ENV_FILE"
+
+ssh $SSH_OPTIONS $REMOTE_SSH "cd $REMOTE_ROOT && mkdir -p $PROJECT_DIR && cd $PROJECT_DIR && mkdir -p $SHARED_DIR && mkdir -p $RELEASES_DIR && mkdir -p $RELEASE_CURRENT && touch $LOG_FILE"

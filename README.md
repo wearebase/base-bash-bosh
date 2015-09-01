@@ -40,9 +40,17 @@ An example `config/environments` folder could contain
     staging.env
     production.env
 
-## Usage
+## Install To Server
 
-From the command line, various scripts can be run in a similar way to the install script mentioned above:
+Once you have made a configuration for a server, you can run the following command to setup the project directories on your server for deployments. See the Deploy step for more information on this.
+
+    ./bin/bosh install-remote <environment-name>
+
+The script is called with one parameter. This is the name of the environment you wish to setup the folder structure on. It will be created within the REMOTE_ROOT as defined in `config/environments/<environment-name>.env`.
+
+## General Usage
+
+From the command line, various scripts can be run in a similar way to the install scripts mentioned above do:
 
     ./bin/bosh <command> <parameters>
 

@@ -37,6 +37,12 @@ then
 	fi
 fi
 
+if [ "$ACTION" == "install-remote" ]
+then
+	source "$CWD/install-remote"
+	exit 0
+fi
+
 if [ "$ACTION" == "deploy" ]
 then
 	source "$CWD/deploy"
