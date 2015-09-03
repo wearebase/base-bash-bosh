@@ -67,7 +67,7 @@ OPTIONS="$3"
 
 source "$ORIGIN_ENV_FILE"
 ORIGIN_REMOTE_SSH="$USERNAME@$HOSTNAME"
-ORIGIN_REMOTE_ROOT="$REMOTE_ROOT"
+ORIGIN_PROJECT_DIR="$PROJECT_DIR"
 ORIGIN_SSH_OPTIONS="$SSH_OPTIONS"
 ORIGIN_MYSQL_USER="$MYSQL_USER"
 ORIGIN_SCP_OPTIONS="$SCP_OPTIONS"
@@ -75,7 +75,7 @@ ORIGIN_MYSQL_DB_NAME="$MYSQL_DB_NAME"
 
 source "$DESTINATION_ENV_FILE"
 DESTINATION_REMOTE_SSH="$USERNAME@$HOSTNAME"
-DESTINATION_REMOTE_ROOT="$REMOTE_ROOT"
+DESTINATION_PROJECT_DIR="PROJECT_DIR"
 DESTINATION_MYSQL_USER="$MYSQL_USER"
 DESTINATION_SSH_OPTIONS="$SSH_OPTIONS"
 DESTINATION_SCP_OPTIONS="$SCP_OPTIONS"
@@ -111,7 +111,7 @@ then
 
 
     echo "*** Connecting to $ORIGIN_ENV_NAME Server"
-    ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && [[ -f $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME ]] && echo \"    - Skipping export because a dump already exists for today\" && exit ||  echo \"    - Exporting database to dump file on server\" && mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" \"$MYSQLDUMP_PARAMS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/tmp 2>&1 && mv $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/tmp $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME || { echo \"Could not export database, password may have been incorrect\"; exit 1; }"
+    ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_PROJECT_DIR/$DBDUMPS_DIR && [[ -f $ORIGIN_PROJECT_DIR/$DBDUMPS_DIR/$FILENAME ]] && echo \"    - Skipping export because a dump already exists for today\" && exit ||  echo \"    - Exporting database to dump file on server\" && mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" \"$MYSQLDUMP_PARAMS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_PROJECT_DIR/$DBDUMPS_DIR/tmp 2>&1 && mv $ORIGIN_PROJECT_DIR/$DBDUMPS_DIR/tmp $ORIGIN_PROJECT_DIR/$DBDUMPS_DIR/$FILENAME || { echo \"Could not export database, password may have been incorrect\"; exit 1; }"
     # copy file to server
 
     if [ -f  $LOCAL_DBDUMPS_DIR/$FILENAME ]
@@ -121,18 +121,18 @@ then
     fi
 
     echo "    - Copying $ORIGIN_ENV_NAME database dump file to local repository"
-    scp -Cr $ORIGIN_SCP_OPTIONS $ORIGIN_REMOTE_SSH:$ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME $LOCAL_DBDUMPS_DIR/$FILENAME
+    scp -Cr $ORIGIN_SCP_OPTIONS $ORIGIN_REMOTE_SSH:$ORIGIN_PROJECT_DIR/$DBDUMPS_DIR/$FILENAME $LOCAL_DBDUMPS_DIR/$FILENAME
 
-    ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "mkdir -p $DESTINATION_REMOTE_ROOT/$DBDUMPS_DIR"
+    ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "mkdir -p $DESTINATION_PROJECT_DIR/$DBDUMPS_DIR"
 
     echo "    - Copying local database dump file to $DESTINATION_ENV_NAME server"
-    scp -Cr $DESTINATION_SCP_OPTIONS $LOCAL_DBDUMPS_DIR/$FILENAME $DESTINATION_REMOTE_SSH:$DESTINATION_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME
+    scp -Cr $DESTINATION_SCP_OPTIONS $LOCAL_DBDUMPS_DIR/$FILENAME $DESTINATION_REMOTE_SSH:$DESTINATION_PROJECT_DIR/$DBDUMPS_DIR/$FILENAME
     # import
 
     if [ ! "$OPTIONS" = "--backup" ] && [ ! "$OPTIONS" = "-b" ]
     then
        echo "    - Importing database on $DESTINATION_ENV_NAME Server"
-       ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "mysql -u $DESTINATION_MYSQL_USER --password=$DESTINATION_ENV_DB_PASS $DESTINATION_MYSQL_DB_NAME < $DESTINATION_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME && echo \"    - Updating setting values in the database to environment specific values\" && echo \"$POST_IMPORT_DB_COMMAND\" | mysql -u $DESTINATION_MYSQL_USER --password=\"$DESTINATION_ENV_DB_PASS\" $DESTINATION_MYSQL_DB_NAME"
+       ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "mysql -u $DESTINATION_MYSQL_USER --password=$DESTINATION_ENV_DB_PASS $DESTINATION_MYSQL_DB_NAME < $DESTINATION_PROJECT_DIR/$DBDUMPS_DIR/$FILENAME && echo \"    - Updating setting values in the database to environment specific values\" && echo \"$POST_IMPORT_DB_COMMAND\" | mysql -u $DESTINATION_MYSQL_USER --password=\"$DESTINATION_ENV_DB_PASS\" $DESTINATION_MYSQL_DB_NAME"
     fi
 
 else
@@ -141,7 +141,7 @@ else
     then
 
        echo "*** Testing connection to $DESTINATION_ENV_NAME Server"
-       ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "mkdir -p $DESTINATION_REMOTE_ROOT/$DBDUMPS_DIR"
+       ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "mkdir -p $DESTINATION_PROJECT_DIR/$DBDUMPS_DIR"
 
        if [ -f  $LOCAL_DBDUMPS_DIR/$FILENAME ]
        then
@@ -154,13 +154,13 @@ else
 
        # copy file to server
        echo "    - Copying local database dump file to $DESTINATION_ENV_NAME server"
-       scp -Cr $DESTINATION_SCP_OPTIONS $LOCAL_DBDUMPS_DIR/$FILENAME $DESTINATION_REMOTE_SSH:$DESTINATION_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME
+       scp -Cr $DESTINATION_SCP_OPTIONS $LOCAL_DBDUMPS_DIR/$FILENAME $DESTINATION_REMOTE_SSH:$DESTINATION_PROJECT_DIR/$DBDUMPS_DIR/$FILENAME
        # import
 
        if [ ! "$OPTIONS" = "--backup" ] && [ ! "$OPTIONS" = "-b" ]
        then
            echo "    - Importing database on $DESTINATION_ENV_NAME Server"
-           ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "mysql -u $DESTINATION_MYSQL_USER --password=$DESTINATION_ENV_DB_PASS $DESTINATION_MYSQL_DB_NAME < $DESTINATION_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME && echo \"    - Updating setting values in the database to environment specific values\" && echo \"$POST_IMPORT_DB_COMMAND\" | mysql -u $DESTINATION_MYSQL_USER --password=\"$DESTINATION_ENV_DB_PASS\" $DESTINATION_MYSQL_DB_NAME"
+           ssh $DESTINATION_SSH_OPTIONS $DESTINATION_REMOTE_SSH "mysql -u $DESTINATION_MYSQL_USER --password=$DESTINATION_ENV_DB_PASS $DESTINATION_MYSQL_DB_NAME < $DESTINATION_PROJECT_DIR/$DBDUMPS_DIR/$FILENAME && echo \"    - Updating setting values in the database to environment specific values\" && echo \"$POST_IMPORT_DB_COMMAND\" | mysql -u $DESTINATION_MYSQL_USER --password=\"$DESTINATION_ENV_DB_PASS\" $DESTINATION_MYSQL_DB_NAME"
        fi
 
     fi
@@ -169,7 +169,7 @@ else
     then
 
         echo "*** Connecting to $ORIGIN_ENV_NAME Server"
-        ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR && [[ -f $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME ]] && echo \"    - Skipping export because a dump already exists for today\" && exit || echo \"    - Exporting database to dump file on server\" && mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" \"$MYSQLDUMP_PARAMS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/tmp 2>&1 && mv $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/tmp $ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME || { echo \"Could not export database, password may have been incorrect\"; exit 1; }"
+        ssh $ORIGIN_SSH_OPTIONS $ORIGIN_REMOTE_SSH "mkdir -p $ORIGIN_PROJECT_DIR/$DBDUMPS_DIR && [[ -f $ORIGIN_PROJECT_DIR/$DBDUMPS_DIR/$FILENAME ]] && echo \"    - Skipping export because a dump already exists for today\" && exit || echo \"    - Exporting database to dump file on server\" && mysqldump -u $ORIGIN_MYSQL_USER --password=\"$ORIGIN_ENV_DB_PASS\" \"$MYSQLDUMP_PARAMS\" $ORIGIN_MYSQL_DB_NAME > $ORIGIN_PROJECT_DIR/$DBDUMPS_DIR/tmp 2>&1 && mv $ORIGIN_PROJECT_DIR/$DBDUMPS_DIR/tmp $ORIGIN_PROJECT_DIR/$DBDUMPS_DIR/$FILENAME || { echo \"Could not export database, password may have been incorrect\"; exit 1; }"
         # copy file to server
 
         if [ -f  $LOCAL_DBDUMPS_DIR/$FILENAME ]
@@ -179,7 +179,7 @@ else
         fi
 
         echo "    - Copying Remote database dump file to local repository"
-        scp -Cr $ORIGIN_SCP_OPTIONS $ORIGIN_REMOTE_SSH:$ORIGIN_REMOTE_ROOT/$DBDUMPS_DIR/$FILENAME $LOCAL_DBDUMPS_DIR/$FILENAME
+        scp -Cr $ORIGIN_SCP_OPTIONS $ORIGIN_REMOTE_SSH:$ORIGIN_PROJECT_DIR/$DBDUMPS_DIR/$FILENAME $LOCAL_DBDUMPS_DIR/$FILENAME
 
         if [ ! "$OPTIONS" = "--backup" ] && [ ! "$OPTIONS" = "-b" ]
         then

@@ -30,7 +30,7 @@ Once installed, there will be a set a configuration files in the root of your pr
 `config/bosh-config` contains the key settings for the scripts. `config/environments/` contains `.env` files which are the *environments* the bosh scripts use as parameters.
 For example the `production` environment uses settings from the `config/environments/production.env` file.
 
-The environment `local` does not need a user/hostname/project-root (see `config/environments/local.env` for an example). 
+The environment `local` does not need a user/hostname/project-dir (see `config/environments/local.env` for an example). 
 
 An example `config/environments` folder could contain
 
@@ -46,7 +46,7 @@ Once you have made a configuration for a server, you can run the following comma
 
     ./bin/bosh install-remote <environment-name>
 
-The script is called with one parameter. This is the name of the environment you wish to setup the folder structure on. It will be created within the REMOTE_ROOT as defined in `config/environments/<environment-name>.env`.
+The script is called with one parameter. This is the name of the environment you wish to setup the folder structure on. It create the PROJECT_DIR folder as defined in `config/environments/<environment-name>.env` and the folders required within it.
 
 ## General Usage
 

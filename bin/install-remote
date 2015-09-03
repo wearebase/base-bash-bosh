@@ -26,4 +26,4 @@ fi
 
 source "$ENV_FILE"
 
-ssh $SSH_OPTIONS $REMOTE_SSH "cd $REMOTE_ROOT && mkdir -p $PROJECT_DIR && cd $PROJECT_DIR && mkdir -p $SHARED_DIR && mkdir -p $RELEASES_DIR && mkdir -p $RELEASE_CURRENT && touch $LOG_FILE"
+ssh $SSH_OPTIONS $REMOTE_SSH "mkdir -p $PROJECT_DIR && cd $PROJECT_DIR && mkdir -p $SHARED_DIR && mkdir -p $RELEASES_DIR && mkdir -p $RELEASE_CURRENT && touch $LOG_FILE"
