@@ -8,6 +8,7 @@ PROJECT_DIR="project"
 SHARED_DIR="shared"
 RELEASES_DIR="releases"
 RELEASE_CURRENT="current"
+DBDUMPS_DIR="dbdumps"
 
 ENV_NAME="$1"
 
@@ -26,4 +27,6 @@ fi
 
 source "$ENV_FILE"
 
-ssh $SSH_OPTIONS $REMOTE_SSH "mkdir -p $PROJECT_DIR && cd $PROJECT_DIR && mkdir -p $SHARED_DIR && mkdir -p $RELEASES_DIR && mkdir -p $RELEASE_CURRENT && touch $LOG_FILE"
+REMOTE_SSH=$USERNAME@$HOSTNAME
+
+ssh $SSH_OPTIONS $REMOTE_SSH "mkdir -p $PROJECT_DIR && cd $PROJECT_DIR && mkdir -p $SHARED_DIR && mkdir -p $RELEASES_DIR && mkdir -p $RELEASE_CURRENT && mkdir -p $DBDUMPS_DIR"
